@@ -1,4 +1,4 @@
-# Semantic Song Recommendations
+# TextAndAudio_SongFinder
 
 This project aims to provide song recommendations based on the lyrics and features of the current song the user is listening to. Users can either type or sing the lyrics they remember, and the project will suggest songs with similar lyrical content and musical features.
 
