@@ -31,7 +31,7 @@ def recommend_off_current():
 
     results = sp.search(q=f"track: {song_title} {artist}", type="track", limit=10)
 
-    print(results)
+    # print(results)
     if not results["tracks"]["items"]:
         print("No results found for the given song and artist.")
         return
@@ -65,6 +65,7 @@ def get_top_songs(genres, limit=50, num_songs=1000):
 def get_spotify_recommendations(track_id, sp, limit=5):
     seed_tracks = [track_id]
     recommendations = sp.recommendations(seed_tracks=seed_tracks, limit=limit)
+
 
     recommended_tracks = []
     for track in recommendations["tracks"]:

@@ -43,6 +43,7 @@ def search_song(lyrics):
                     song = genius.search_song(song_title, artist)
                     if song is not None:
                         song_lyrics = song.lyrics
+                        # print(song_lyrics)
                         confidence = calculate_confidence(lyrics, song_lyrics)
 
                         # Return song title, artist, and confidence

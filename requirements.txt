@@ -3,7 +3,6 @@ lyricsgenius==3.0.1
 openai==0.27.2
 openai_whisper==20230314
 pandas==1.5.3
-pinecone_client==2.2.1
 python-dotenv==1.0.0
 requests==2.28.2
 scikit_learn==1.2.2

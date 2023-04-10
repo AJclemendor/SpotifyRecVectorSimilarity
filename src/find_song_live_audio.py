@@ -46,7 +46,7 @@ def live_speech_rec():
 
     :return:
     """
-    model = 'small.en'
+    model = 'tiny.en'
     args = argparse.Namespace(
         model=model,
         energy_threshold=1500,  # Increased from 1000
@@ -121,20 +121,31 @@ def live_speech_rec():
                     if i > 3:
                         transcription = []
 
-                print(transcription[-1])
-                single, artist, confidence = search_song(transcription[-1])
+                try:
+                    print(transcription[-1])
+                except:
+                    print("")
+
+                try:
+                    single, artist, confidence = search_song(transcription[-1])
+                except:
+                    pass
+
+
                 # total, artist = search_song(transcription)
                 total_songs.append(single)
                 total_artists.append(artist)
                 # total_songs.append(total)
 
-                if confidence > 0.8 and checker > 3:  # Confidence threshold added
-                    print(total_songs)
-                    return returns_max(total_songs), returns_max(total_artists)
-
+                try:
+                    if confidence > 0.8 and checker > 3:  # Confidence threshold added
+                        print(total_songs)
+                        return returns_max(total_songs), returns_max(total_artists)
+                except:
+                    pass
                 print('', end='', flush=True)
 
-                sleep(0.25)
+                sleep(0.15)
         except KeyboardInterrupt:
             break
 
