@@ -128,14 +128,13 @@ def live_speech_rec():
 
                 try:
                     single, artist, confidence = search_song(transcription[-1])
+                    total_songs.append(single)
+                    total_artists.append(artist)
+
                 except:
                     pass
 
 
-                # total, artist = search_song(transcription)
-                total_songs.append(single)
-                total_artists.append(artist)
-                # total_songs.append(total)
 
                 try:
                     if confidence > 0.8 and checker > 3:  # Confidence threshold added
