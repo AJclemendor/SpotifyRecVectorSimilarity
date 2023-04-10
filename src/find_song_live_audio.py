@@ -139,6 +139,7 @@ def live_speech_rec():
                 try:
                     print(confidence)
                     if confidence > 0.8:  # Confidence threshold added
+                    # adjustable c
                     # if confidence > 0:  # Confidence threshold added
                         correct = input("Is this song correct?")
                         if correct.lower().strip() == 'no':
