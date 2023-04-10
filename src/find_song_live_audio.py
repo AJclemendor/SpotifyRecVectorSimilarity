@@ -46,7 +46,7 @@ def live_speech_rec():
 
     :return:
     """
-    model = 'tiny.en'
+    model = 'small.en'
     args = argparse.Namespace(
         model=model,
         energy_threshold=1500,  # Increased from 1000
@@ -137,7 +137,13 @@ def live_speech_rec():
 
 
                 try:
-                    if confidence > 0.8 and checker > 3:  # Confidence threshold added
+                    print(confidence)
+                    if confidence > 0.8:  # Confidence threshold added
+                    # if confidence > 0:  # Confidence threshold added
+                        correct = input("Is this song correct?")
+                        if correct.lower().strip() == 'no':
+                            continue
+
                         print(total_songs)
                         return returns_max(total_songs), returns_max(total_artists)
                 except:
