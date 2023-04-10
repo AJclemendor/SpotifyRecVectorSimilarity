@@ -12,7 +12,7 @@ This project aims to provide song recommendations based on the lyrics and featur
 ### Installation
 
 1. Clone the repository:
-git clone https://github.com/AJclemendor/SemanticSongRecommendations.git
+git clone https://github.com/AJclemendor/TextAndAudio_SongFinder.git
 
 
 2. Navigate to the project directory:
