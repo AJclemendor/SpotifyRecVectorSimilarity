@@ -2,6 +2,8 @@
 
 This project aims to provide song recommendations based on the lyrics and features of the current song the user is listening to. Users can either type or sing the lyrics they remember, and the project will suggest songs with similar lyrical content and musical features.
 
+Credit to @https://github.com/davabase/transcriber_app for the base realtime audo software -> was adapted to be better at picking out song lyrics.
+
 ## Getting Started
 
 ### Prerequisites
