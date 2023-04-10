@@ -7,7 +7,6 @@ This project aims to provide song recommendations based on the lyrics and featur
 ### Prerequisites
 
 - Python 3.10
-- Docker (optional)
 
 ### Installation
 
