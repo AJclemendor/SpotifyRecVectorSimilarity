@@ -27,7 +27,7 @@ def create_s3_data():
     limit = 50
     total_songs_per_genre = 200
 
-    all_track_features = []
+    all_track_info = []
 
     for genre in genres:
         search_query = f"genre:{genre}"
@@ -37,10 +37,17 @@ def create_s3_data():
             track_ids = [track["id"] for track in tracks]
             track_features = sp.audio_features(track_ids)
             valid_track_features = [tf for tf in track_features if tf is not None]  # Filter out None values
-            all_track_features.extend(valid_track_features)
 
-    features_df = pd.DataFrame(all_track_features,
-                               columns=['id', 'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness',
+            # Extract genre information for each track
+            for track, features in zip(tracks, valid_track_features):
+                if features:
+                    track_info = features
+                    track_info["genre"] = genre
+                    all_track_info.append(track_info)
+
+    # Add genre information to the features_df DataFrame
+    features_df = pd.DataFrame(all_track_info,
+                               columns=['id', 'genre', 'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness',
                                         'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo'])
     # features_df.drop(columns=['id'], inplace=True)
 
@@ -66,6 +73,25 @@ def create_s3_data():
     # Read the CSV file back from the S3 bucket into a pandas DataFrame
     metadata_obj = s3.get_object(Bucket=bucket_name, Key=s3_key)
     metadata_file = metadata_obj["Body"].read().decode("utf-8")
+
+    weight_dict = {
+        'danceability': 3.0,
+        'energy': 9.0,
+        'key': 3.0,
+        'loudness': 1.0,
+        'mode': 1.0,
+        'speechiness': 2.0,
+        'acousticness': 2.0,
+        'instrumentalness': 1.0,
+        'liveness': 3.0,
+        'valence': 1.0,
+        'tempo': 4.0,
+        'genre': 50
+    }
+
+    for feature, weight in weight_dict.items():
+        if feature != 'genre':
+            features_df[feature] *= weight
 
     features_df = pd.read_csv(io.StringIO(metadata_file), index_col=0)
 

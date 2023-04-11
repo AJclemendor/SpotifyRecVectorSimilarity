@@ -23,11 +23,12 @@ pinecone.init(api_key=pinecone_api_key)
 pinecone_index_name = "song-recommendations"
 
 # Create an index
-pinecone.create_index(name=pinecone_index_name, dimension=features_df.shape[1] - 1, metric="euclidean", shards=1)
+pinecone.create_index(name=pinecone_index_name, dimension=features_df.shape[1] - 2, metric="euclidean", shards=1)
 
 def create_pinecone(batch_size=1000):
     song_ids = features_df["id"].tolist()
-    song_vectors = features_df.drop(["id"], axis=1).values.tolist()
+    # Exclude the "genre" column when preparing song_vectors
+    song_vectors = features_df.drop(["id", "genre"], axis=1).values.tolist()
     song_data = dict(zip(song_ids, song_vectors))
 
     # Upsert the song_data into the Pinecone index
