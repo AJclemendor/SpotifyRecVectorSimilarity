@@ -1,5 +1,7 @@
 # Song Finder and Recommender
 
+Play around with the weighting in create_s3_data reccomendations will change based off favored catagories.
+
 This project aims to provide song recommendations based on the lyrics and features of the current song the user is listening to. Users can either type or sing the lyrics they remember, and the project will suggest songs with similar lyrical content and musical features. Additionally, the project creates a local database of songs and their features, uses **Amazon S3** to store song features data, and employs **Pinecone** for vector similarity search to find songs with similar characteristics.
 
 Credit to @https://github.com/davabase/whisper_real_time for the base real-time audio software, which was adapted to be better at picking out song lyrics.
