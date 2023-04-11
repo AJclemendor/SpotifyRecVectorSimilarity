@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 GENIUS_API_KEY = os.getenv("GENIUS_API_KEY")
-genius = lyricsgenius.Genius(GENIUS_API_KEY, timeout=10)  # Increase the timeout to 10 seconds
+genius = lyricsgenius.Genius(GENIUS_API_KEY, timeout=10)  # Increase the timeout to 10 seconds -- was getting timeouted bc i had to make alot of cals
 
 def clean_transcription(text):
     # Remove extra whitespace and special characters
@@ -46,7 +46,7 @@ def search_song(lyrics):
                         # print(song_lyrics)
                         confidence = calculate_confidence(lyrics, song_lyrics)
 
-                        # Return song title, artist, and confidence
+                        # Return song title artist confidence
                         return song_title, artist, confidence
                 except requests.exceptions.Timeout:
                     print("Request timed out. Retrying...")

@@ -45,7 +45,7 @@ def create_s3_data():
                     track_info["genre"] = genre
                     all_track_info.append(track_info)
 
-    # Add genre information to the features_df DataFrame
+    # Add genre information to the features_df DataFrame -- wwithout lots of genre weight it gives... weird recs
     features_df = pd.DataFrame(all_track_info,
                                columns=['id', 'genre', 'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness',
                                         'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo'])
@@ -58,11 +58,11 @@ def create_s3_data():
     bucket_name = "mysongdatabase"
     s3_key = "spotify_song_features.csv"
 
-    # Save the DataFrame to a CSV file in memory
+    # Save the to a CSV file in memmory
     csv_buffer = io.StringIO()
     features_df.to_csv(csv_buffer, index=False)
 
-    # Upload the CSV file to your S3 bucket, replacing the existing file
+    # Upload the CSV file to S3 replaces the existing file
     s3.put_object(
         Bucket=bucket_name,
         Key=s3_key,
@@ -77,7 +77,7 @@ def create_s3_data():
     weight_dict = {
         'danceability': 3.0,
         'energy': 9.0,
-        'key': 3.0,
+        'key': 9.0,
         'loudness': 1.0,
         'mode': 1.0,
         'speechiness': 2.0,
@@ -85,7 +85,7 @@ def create_s3_data():
         'instrumentalness': 1.0,
         'liveness': 3.0,
         'valence': 1.0,
-        'tempo': 4.0,
+        'tempo': 9.0,
         'genre': 50
     }
 

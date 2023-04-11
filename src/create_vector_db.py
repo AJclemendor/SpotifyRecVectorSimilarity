@@ -22,18 +22,18 @@ pinecone.init(api_key=pinecone_api_key)
 
 pinecone_index_name = "song-recommendations"
 
-# Create an index
+# create an index
 pinecone.create_index(name=pinecone_index_name, dimension=features_df.shape[1] - 2, metric="euclidean", shards=1)
 
 def create_pinecone(batch_size=1000):
     song_ids = features_df["id"].tolist()
-    # Exclude the "genre" column when preparing song_vectors
+    # exclude the "genre" column when preparing song_vectors -- would get weird rating and pinecone doesnt give WAB
     song_vectors = features_df.drop(["id", "genre"], axis=1).values.tolist()
     song_data = dict(zip(song_ids, song_vectors))
 
-    # Upsert the song_data into the Pinecone index
+    # upsert the song_data into the pinecone index
     with pinecone.Index(index_name=pinecone_index_name) as index:
-        # Split data into batches and upload them sequentially
+        # split data into batches and upload them by parts
         for i in range(0, len(song_ids), batch_size):
             batch_ids = song_ids[i:i+batch_size]
             batch_vectors = song_vectors[i:i+batch_size]
