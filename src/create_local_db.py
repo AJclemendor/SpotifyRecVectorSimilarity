@@ -1,39 +1,57 @@
-import json
 import os
-
+import io
+import pandas as pd
+import boto3
 import spotipy
-from dotenv import load_dotenv
 from spotipy.oauth2 import SpotifyClientCredentials
-
+from dotenv import load_dotenv
 load_dotenv()
 
+# Set up your Spotify API credentials
 client_id = os.getenv("SPOTIFY_API_KEY")
 client_secret = os.getenv("SPOTIFY_API_SECRET_KEY")
-client_credentials_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
-sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
+# Authenticate with the Spotify API
+auth_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
+sp = spotipy.Spotify(auth_manager=auth_manager)
 
-def get_top_songs_by_genre(genre, limit=50, num_songs=1000):
-    all_songs = []
-    for offset in range(0, num_songs, limit):
-        results = sp.search(q=f"genre:{genre}", type="track", limit=limit, offset=offset)
-        all_songs.extend(results["tracks"]["items"])
-    return all_songs
+# Search for tracks and fetch their features
+search_query = "genre:pop"  # Replace this with your desired search query
+results = sp.search(q=search_query, type="track", limit=50)  # Limit can be a maximum of 50
 
+# Extract track features and create a pandas DataFrame
+tracks = results["tracks"]["items"]
 
-genres = ["rap", "hip-hop", "trap", "gangsta-rap", "underground-hip-hop", "old-school-hip-hop", "alternative-hip-hop",
-          "conscious-hip-hop", "rap", "hip-hop", "trap", "gangsta-rap", "underground-hip-hop", "old-school-hip-hop",
-          "alternative-hip-hop", "conscious-hip-hop", "boom-bap", "jazz-rap", "hardcore-hip-hop", "experimental-hip-hop",
-          "west-coast-hip-hop", "east-coast-hip-hop", "southern-hip-hop", "crunk", "hyphy", "grime", "horrorcore", "g-funk"]
-all_songs = []
+track_ids = [track["id"] for track in tracks]
+track_features = sp.audio_features(track_ids)
 
-for genre in genres:
-    print(f"Fetching songs for genre: {genre}")
-    genre_songs = get_top_songs_by_genre(genre)
-    all_songs.extend(genre_songs)
+features_df = pd.DataFrame(track_features)
 
-print(f"Fetched {len(all_songs)} songs.")
+# Set up your AWS credentials
+aws_access_key_id = os.getenv("AMAZON_ACCESS_KEY")
+aws_secret_access_key = os.getenv("AMAZON_SECRET_ACCESS_KEY")
 
-# Save fetched songs to a JSON file
-with open("songs.json", "w") as f:
-    json.dump(all_songs, f, indent=2)
+# Initialize the S3 client
+s3 = boto3.client("s3", aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
+
+# Set the bucket_name and s3_key variables
+bucket_name = "mysongdatabase"
+s3_key = "spotify_song_features.csv"
+
+# Save the DataFrame to a CSV file in memory
+csv_buffer = io.StringIO()
+features_df.to_csv(csv_buffer, index=False)
+
+# Upload the CSV file to your S3 bucket
+s3.put_object(
+    Bucket=bucket_name,
+    Key=s3_key,
+    Body=csv_buffer.getvalue(),
+    ContentType="text/csv",
+)
+
+# Read the CSV file back from the S3 bucket into a pandas DataFrame
+metadata_obj = s3.get_object(Bucket=bucket_name, Key=s3_key)
+metadata_file = metadata_obj["Body"].read().decode("utf-8")
+
+features_df = pd.read_csv(io.StringIO(metadata_file), index_col=0)
