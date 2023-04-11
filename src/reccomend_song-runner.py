@@ -6,6 +6,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy
 from find_song_live_audio import live_speech_rec
 from genius_get_song import search_song_typed
+from get_recs_vector import get_vector_recs
 
 load_dotenv()
 
@@ -14,8 +15,8 @@ client_secret = os.getenv("SPOTIFY_API_SECRET_KEY")
 client_credentials_manager = SpotifyClientCredentials(client_id=client_id, client_secret=client_secret)
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
-def recommend_off_current():
 
+def recommend_off_current():
     """
     Sentiment on the current song so get a few things like
     Mood, Genre, Artist
@@ -54,6 +55,7 @@ def recommend_off_current():
 
     return features, track_id
 
+
 def get_top_songs(genres, limit=50, num_songs=1000):
     genre_query = " OR ".join(f"genre:{genre}" for genre in genres)
     all_songs = []
@@ -62,10 +64,10 @@ def get_top_songs(genres, limit=50, num_songs=1000):
         all_songs.extend(results["tracks"]["items"])
     return all_songs
 
+
 def get_spotify_recommendations(track_id, sp, limit=5):
     seed_tracks = [track_id]
     recommendations = sp.recommendations(seed_tracks=seed_tracks, limit=limit)
-
 
     recommended_tracks = []
     for track in recommendations["tracks"]:
@@ -77,8 +79,8 @@ def get_spotify_recommendations(track_id, sp, limit=5):
 
     return recommended_tracks
 
-def recommend_off_current_typed(title, artist):
 
+def recommend_off_current_typed(title, artist):
     """
     Sentiment on the current song so get a few things like
     Mood, Genre, Artist
@@ -114,8 +116,23 @@ def recommend_off_current_typed(title, artist):
     # print("Liveness:", features["liveness"])
     # print("Valence:", features["valence"])
     # print("Tempo:", features["tempo"])
+    # track_id
+    feat_list = [
+                 features["danceability"],
+                 features["energy"],
+                 features["key"],
+                 features["loudness"],
+                 features["mode"],
+                 features["speechiness"],
+                 features["acousticness"],
+                 features["instrumentalness"],
+                 features["liveness"],
+                 features["valence"],
+                 features["tempo"]
+                 ]
 
-    return features, track_id
+    return features, track_id, feat_list
+
 
 def print_recommendations(recommendations):
     print("\nRecommended Songs:")
@@ -137,8 +154,10 @@ if __name__ == '__main__':
                 print(titles[i], artists[i])
                 which = input("Does This Look Right??")
                 if which.lower() == 'yes':
-                    features, track_id = recommend_off_current_typed(titles[i], artists[i])
+                    features, track_id, fl = recommend_off_current_typed(titles[i], artists[i])
 
+                    print("Feats {0}".format(fl))
+                    get_vector_recs(fl)
                     recommendations = get_spotify_recommendations(track_id, sp)
 
                     print_recommendations(recommendations)
